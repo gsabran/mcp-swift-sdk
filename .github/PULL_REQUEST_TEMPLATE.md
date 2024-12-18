@@ -1,5 +1,5 @@
 ## Summary
-<!--- Provide a general summary of your changes in the Title above -->
+<!--- Provide a general summary of your changes -->
 
 ## Details
 <!--- Describe your changes in detail -->

@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "ModelContextProtocol",
+  name: "MCP",
   platforms: [
     .macOS(.v14),
   ],

@@ -29,7 +29,19 @@ jobs:
     - name: Build
       run: swift build -q
     - name: Run tests
-      run: swift test -q
+      run: swift test -q --enable-code-coverage
+    # Upload code coverage
+    - uses: michaelhenry/swifty-code-coverage@v1.0.0
+      with:
+        build-path: .build
+        target: MCPPackageTests.xctest
+        is-spm: true
+    - name: Upload to Codecov
+      run: |
+        bash <(curl https://codecov.io/bash) -f "coverage/*.info"
+      shell: bash
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     runs-on: macos-15

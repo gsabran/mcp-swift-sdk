@@ -12,23 +12,19 @@ The Model Context Protocol allows applications to provide context for LLMs in a 
 
 ## Installation
 
- <br> In Xcode, add MCPClient with: `File` → `Add Package Dependencies…` and input the package URL:
+ - Xcode: `File → Add Package Dependencies…` and input the package URL `https://github.com/gsabran/mcp-swift-sdk`
 
- > `https://github.com/gsabran/mpc-swift-sdk`
-
- Or, for SPM-based projects, add it to your package dependencies:
-
+ - SPM-based projects:
+ Add the dependency to your package:
  ```swift
  dependencies: [
    .package(url: "https://github.com/gsabran/mcp-swift-sdk", from: "0.0.1")
  ]
- ```
-
- And then add the product to all targets that use the rependency:
-
- ```swift
- .product(name: "MCPClient", package: "mcp-swift-sdk"),
- ```
+```
+And then add the product to all targets that use the dependency:
+```swift
+.product(name: "MCPClient", package: "mcp-swift-sdk"),
+```
 
 ## Quick Start
 

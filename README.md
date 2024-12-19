@@ -1,5 +1,9 @@
 # MCP Swift SDK (Client only for now)!
 
+[![Build & Deploy](https://github.com/gsabran/mcp-swift-sdk/actions/workflows/swift.yml/badge.svg)](https://github.com/gsabran/mcp-swift-sdk/actions/workflows/swift.yml)
+[![Coverage Statusodecov](https://codecov.io/gh/gsabran/mcp-swift-sdk/graph/badge.svg?token=8QH4WQMLW7)](https://codecov.io/gh/gsabran/mcp-swift-sdk)
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-048754?logo=buymeacoffee)](https://buymeacoffee.com/gsabran)
+
 Swift implementation of the [Model Context Protocol](https://modelcontextprotocol.io) (MCP), providing both client and server capabilities for integrating with LLM surfaces.
 
 ## Overview

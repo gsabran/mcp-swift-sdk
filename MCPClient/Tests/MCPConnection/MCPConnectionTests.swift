@@ -34,44 +34,15 @@ class MCPClientConnectionTest {
   let clientCapabilities: ClientCapabilities
   var sut: MCPClientConnection
 
-  /// Assert that after receiving the given request, the given response is sent.
-  func assert(
-    receiving request: String,
-    respondsWith response: String)
-    async throws
-  {
-    let responseSent = expectation(description: "response sent")
-    transport.expect(messages: [
-      { sendMessage in
-        sendMessage(response)
-        responseSent.fulfill()
-      },
-    ])
-
-    transport.receive(message: request)
-    try await fulfillment(of: responseSent)
-  }
-
-  /// Asserts that executing the given task sends the expected request and that then receiving the specified response leads to the task's completion.
-  func assert<Result>(
-    executing task: @escaping () async throws -> Result,
-    sends request: String,
-    receives response: String)
-    async throws -> Result
-  {
-    try await assert(executing: task, triggers: [
-      .request(request),
-      .response(response),
-    ])
-  }
-
   /// Asserts that the given task sends the expected requests and receives the expected responses.
   /// - Parameters:
   ///  - task: The task to execute.
   ///  - messages: The sequence of messages relevant to the task. All responses are dequeued as soon as possible, and each request is awaited for until continuing to dequeue messages.
-  func assert<Result>(
+  ///  - transport: The transport to use.
+  static func assert<Result>(
     executing task: @escaping () async throws -> Result,
-    triggers messages: [Message])
+    triggers messages: [Message],
+    with transport: MockTransport)
     async throws -> Result
   {
     var result: Result? = nil
@@ -134,6 +105,49 @@ class MCPClientConnectionTest {
       throw err ?? TestError.expectationUnfulfilled
     }
     return result
+  }
+
+  /// Assert that after receiving the given request, the given response is sent.
+  func assert(
+    receiving request: String,
+    respondsWith response: String)
+    async throws
+  {
+    let responseSent = expectation(description: "response sent")
+    transport.expect(messages: [
+      { sendMessage in
+        sendMessage(response)
+        responseSent.fulfill()
+      },
+    ])
+
+    transport.receive(message: request)
+    try await fulfillment(of: responseSent)
+  }
+
+  /// Asserts that executing the given task sends the expected request and that then receiving the specified response leads to the task's completion.
+  func assert<Result>(
+    executing task: @escaping () async throws -> Result,
+    sends request: String,
+    receives response: String)
+    async throws -> Result
+  {
+    try await assert(executing: task, triggers: [
+      .request(request),
+      .response(response),
+    ])
+  }
+
+  /// Asserts that the given task sends the expected requests and receives the expected responses.
+  /// - Parameters:
+  ///  - task: The task to execute.
+  ///  - messages: The sequence of messages relevant to the task. All responses are dequeued as soon as possible, and each request is awaited for until continuing to dequeue messages.
+  func assert<Result>(
+    executing task: @escaping () async throws -> Result,
+    triggers messages: [Message])
+    async throws -> Result
+  {
+    try await Self.assert(executing: task, triggers: messages, with: transport)
   }
 
   func assert<Result>(

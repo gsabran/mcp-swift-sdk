@@ -49,18 +49,8 @@ class MCPClientTest {
   let name: String
   let connection: MockMCPClientConnection
 
-  func createMCPClient(
-    name: String? = nil,
-    version: String? = nil,
-    capabilities: ClientCapabilities? = nil,
-    serverInfo _: RunnableServerConfiguration? = nil,
-    getConnection: (() -> MCPClientConnectionInterface)? = nil)
-    async throws -> MCPClient
-  {
-    try await MCPClient(
-      info: .init(name: name ?? self.name, version: version ?? self.version),
-      capabilities: capabilities ?? self.capabilities,
-      getConnection: getConnection ?? { self.connection })
+  func createMCPClient(connection: MCPClientConnectionInterface? = nil) async throws -> MCPClient {
+    try await MCPClient(connection: connection ?? self.connection)
   }
 
 }

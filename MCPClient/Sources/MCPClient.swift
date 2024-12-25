@@ -11,26 +11,31 @@ public actor MCPClient: MCPClientInterface {
 
   public init(
     info: Implementation,
-    capabilities: ClientCapabilities,
-    transport: Transport)
+    transport: Transport,
+    samplingRequestHandler: ((CreateMessageRequest.Params) async throws -> CreateMessageRequest.Result)? = nil,
+    listRootRequestHandler: ((ListRootsRequest.Params) async throws -> ListRootsRequest.Result)? = nil)
   async throws {
+    let capabilities = ClientCapabilities(
+      experimental: nil, // TODO: support experimental requests
+      roots: listRootRequestHandler.map { _ in ListChangedCapability(listChanged: true) },
+      sampling: samplingRequestHandler.map { _ in EmptyObject() })
+
     try await self.init(
-      info: info,
-      capabilities: capabilities,
-      getConnection: { try MCPClientConnection(
+      samplingRequestHandler: samplingRequestHandler,
+      listRootRequestHandler: listRootRequestHandler,
+      connection: try MCPClientConnection(
         info: info,
         capabilities: capabilities,
-        transport: transport) })
+        transport: transport))
   }
 
   init(
-    info _: Implementation,
-    capabilities _: ClientCapabilities,
-    getConnection: @escaping () throws -> MCPClientConnectionInterface)
+    samplingRequestHandler: ((CreateMessageRequest.Params) async throws -> CreateMessageRequest.Result)? = nil,
+    listRootRequestHandler: ((ListRootsRequest.Params) async throws -> ListRootsRequest.Result)? = nil,
+    connection: MCPClientConnectionInterface)
   async throws {
-    self.getConnection = getConnection
-
     // Initialize the connection, and then update server capabilities.
+    self.connection = connection
     try await connect()
     Task { try await self.updateTools() }
     Task { try await self.updatePrompts() }
@@ -126,7 +131,7 @@ public actor MCPClient: MCPClientInterface {
   private let _resources = CurrentValueSubject<ServerCapabilityState<[Resource]>?, Never>(nil)
   private let _resourceTemplates = CurrentValueSubject<ServerCapabilityState<[ResourceTemplate]>?, Never>(nil)
 
-  private let getConnection: () throws -> MCPClientConnectionInterface
+  let connection: MCPClientConnectionInterface
 
   private var progressHandlers = [String: (progress: Double, total: Double?) -> Void]()
 
@@ -212,7 +217,6 @@ public actor MCPClient: MCPClientInterface {
   }
 
   private func connect() async throws {
-    let connection = try getConnection()
     let response = try await connection.initialize()
     guard response.protocolVersion == MCP.protocolVersion else {
       throw MCPClientError.versionMismatch

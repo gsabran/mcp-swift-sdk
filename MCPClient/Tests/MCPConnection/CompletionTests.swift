@@ -4,8 +4,8 @@ import MCPShared
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class CompletionTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class CompletionTests: MCPClientConnectionTest {
     @Test("request completion")
     func test_requestCompletion() async throws {
       let resources = try await assert(

@@ -6,14 +6,14 @@ public typealias AnyJRPCResponse = Swift.Result<Encodable & Sendable, AnyJSONRPC
 
 public typealias HandleServerRequest = (ServerRequest, (AnyJRPCResponse) -> Void)
 
-// MARK: - MCPConnectionInterface
+// MARK: - MCPClientConnectionInterface
 
 /// The MCP JRPC Bridge is a stateless interface to the MCP server that provides a higher level Swift interface.
 /// It does not implement any of the stateful behaviors of the MCP server, such as subscribing to changes, detecting connection health,
 /// ensuring that the connection has been initialized before being used etc.
 ///
 /// For most use cases, `MCPClient` should be a preferred interface.
-public protocol MCPConnectionInterface {
+public protocol MCPClientConnectionInterface {
   /// The notifications received by the server.
   var notifications: AsyncStream<ServerNotification> { get async }
   // TODO: look at moving the request handler to the init

@@ -3,8 +3,8 @@ import JSONRPC
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class ListResourceTemplatesTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class ListResourceTemplatesTests: MCPClientConnectionTest {
 
     @Test("list resource templates")
     func test_listResourceTemplates() async throws {

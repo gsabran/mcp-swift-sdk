@@ -5,8 +5,8 @@ import SwiftTestingUtils
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class LoggingTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class LoggingTests: MCPClientConnectionTest {
     @Test("setting log level")
     func test_settingLogLevel() async throws {
       _ = try await assert(

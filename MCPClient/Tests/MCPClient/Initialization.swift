@@ -36,7 +36,7 @@ extension MCPClientTestSuite {
       let initializationRequestIsSent = expectation(description: "initialization request is sent")
       let initializationIsAcknowledged = expectation(description: "initialization is acknowledged")
 
-      var connection: MockMCPConnection? = try! MockMCPConnection(
+      var connection: MockMCPClientConnection? = try! MockMCPClientConnection(
         info: .init(name: name, version: version),
         capabilities: capabilities)
 
@@ -53,7 +53,7 @@ extension MCPClientTestSuite {
       }
       weak var connectionReference = connection
 
-      var client: MCPClient? = try await createMCPClient(getMcpConnection: { connection! })
+      var client: MCPClient? = try await createMCPClient(getConnection: { connection! })
       _ = client
       try await fulfillment(of: [initializationRequestIsSent, initializationIsAcknowledged])
 

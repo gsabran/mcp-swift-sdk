@@ -4,8 +4,8 @@ import MCPShared
 #if DEBUG
 // TODO: move to a test helper package
 
-/// A mock `MCPConnection` that can be used in tests.
-class MockMCPConnection: MCPConnectionInterface {
+/// A mock `MCPClientConnection` that can be used in tests.
+class MockMCPClientConnection: MCPClientConnectionInterface {
 
   // MARK: Lifecycle
 
@@ -89,109 +89,109 @@ class MockMCPConnection: MCPConnectionInterface {
     if let initializeStub {
       return try await initializeStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "initialize")
+    throw MockMCPClientConnectionError.notImplemented(function: "initialize")
   }
 
   func acknowledgeInitialization() async throws {
     if let acknowledgeInitializationStub {
       return try await acknowledgeInitializationStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "acknowledgeInitialization")
+    throw MockMCPClientConnectionError.notImplemented(function: "acknowledgeInitialization")
   }
 
   func ping() async throws {
     if let pingStub {
       return try await pingStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "ping")
+    throw MockMCPClientConnectionError.notImplemented(function: "ping")
   }
 
   func listPrompts() async throws -> [Prompt] {
     if let listPromptsStub {
       return try await listPromptsStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "listPrompts")
+    throw MockMCPClientConnectionError.notImplemented(function: "listPrompts")
   }
 
   func getPrompt(_ params: GetPromptRequest.Params) async throws -> GetPromptRequest.Result {
     if let getPromptStub {
       return try await getPromptStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "getPrompt")
+    throw MockMCPClientConnectionError.notImplemented(function: "getPrompt")
   }
 
   func listResources() async throws -> [Resource] {
     if let listResourcesStub {
       return try await listResourcesStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "listResources")
+    throw MockMCPClientConnectionError.notImplemented(function: "listResources")
   }
 
   func readResource(_ params: ReadResourceRequest.Params) async throws -> ReadResourceRequest.Result {
     if let readResourceStub {
       return try await readResourceStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "readResource")
+    throw MockMCPClientConnectionError.notImplemented(function: "readResource")
   }
 
   func subscribeToUpdateToResource(_ params: SubscribeRequest.Params) async throws {
     if let subscribeToUpdateToResourceStub {
       return try await subscribeToUpdateToResourceStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "subscribeToUpdateToResource")
+    throw MockMCPClientConnectionError.notImplemented(function: "subscribeToUpdateToResource")
   }
 
   func unsubscribeToUpdateToResource(_ params: UnsubscribeRequest.Params) async throws {
     if let unsubscribeToUpdateToResourceStub {
       return try await unsubscribeToUpdateToResourceStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "unsubscribeToUpdateToResource")
+    throw MockMCPClientConnectionError.notImplemented(function: "unsubscribeToUpdateToResource")
   }
 
   func listResourceTemplates() async throws -> [ResourceTemplate] {
     if let listResourceTemplatesStub {
       return try await listResourceTemplatesStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "listResourceTemplates")
+    throw MockMCPClientConnectionError.notImplemented(function: "listResourceTemplates")
   }
 
   func listTools() async throws -> [Tool] {
     if let listToolsStub {
       return try await listToolsStub()
     }
-    throw MockMCPConnectionError.notImplemented(function: "listTools")
+    throw MockMCPClientConnectionError.notImplemented(function: "listTools")
   }
 
   func call(toolName: String, arguments: JSON?, progressToken: ProgressToken?) async throws -> CallToolRequest.Result {
     if let callToolStub {
       return try await callToolStub(toolName, arguments, progressToken)
     }
-    throw MockMCPConnectionError.notImplemented(function: "callTool")
+    throw MockMCPClientConnectionError.notImplemented(function: "callTool")
   }
 
   func requestCompletion(_ params: CompleteRequest.Params) async throws -> CompleteRequest.Result {
     if let requestCompletionStub {
       return try await requestCompletionStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "requestCompletion")
+    throw MockMCPClientConnectionError.notImplemented(function: "requestCompletion")
   }
 
   func setLogLevel(_ params: SetLevelRequest.Params) async throws -> SetLevelRequest.Result {
     if let setLogLevelStub {
       return try await setLogLevelStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "setLogLevel")
+    throw MockMCPClientConnectionError.notImplemented(function: "setLogLevel")
   }
 
   func log(_ params: LoggingMessageNotification.Params) async throws {
     if let logStub {
       return try await logStub(params)
     }
-    throw MockMCPConnectionError.notImplemented(function: "log")
+    throw MockMCPClientConnectionError.notImplemented(function: "log")
   }
 }
 
-enum MockMCPConnectionError: Error {
+enum MockMCPClientConnectionError: Error {
   case notImplemented(function: String)
 }
 

@@ -3,8 +3,8 @@ import JSONRPC
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class PingTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class PingTests: MCPClientConnectionTest {
 
     @Test("sending ping")
     func sendingPing() async throws {

@@ -17,7 +17,7 @@ public actor MCPClient: MCPClientInterface {
     try await self.init(
       info: info,
       capabilities: capabilities,
-      getMcpConnection: { try MCPConnection(
+      getConnection: { try MCPClientConnection(
         info: info,
         capabilities: capabilities,
         transport: transport) })
@@ -26,9 +26,9 @@ public actor MCPClient: MCPClientInterface {
   init(
     info _: Implementation,
     capabilities _: ClientCapabilities,
-    getMcpConnection: @escaping () throws -> MCPConnectionInterface)
+    getConnection: @escaping () throws -> MCPClientConnectionInterface)
   async throws {
-    self.getMcpConnection = getMcpConnection
+    self.getConnection = getConnection
 
     // Initialize the connection, and then update server capabilities.
     try await connect()
@@ -114,7 +114,7 @@ public actor MCPClient: MCPClientInterface {
   // MARK: Private
 
   private struct ConnectionInfo {
-    let connection: MCPConnectionInterface
+    let connection: MCPClientConnectionInterface
     let serverInfo: Implementation
     let serverCapabilities: ServerCapabilities
   }
@@ -126,7 +126,7 @@ public actor MCPClient: MCPClientInterface {
   private let _resources = CurrentValueSubject<ServerCapabilityState<[Resource]>?, Never>(nil)
   private let _resourceTemplates = CurrentValueSubject<ServerCapabilityState<[ResourceTemplate]>?, Never>(nil)
 
-  private let getMcpConnection: () throws -> MCPConnectionInterface
+  private let getConnection: () throws -> MCPClientConnectionInterface
 
   private var progressHandlers = [String: (progress: Double, total: Double?) -> Void]()
 
@@ -212,18 +212,18 @@ public actor MCPClient: MCPClientInterface {
   }
 
   private func connect() async throws {
-    let mcpConnection = try getMcpConnection()
-    let response = try await mcpConnection.initialize()
+    let connection = try getConnection()
+    let response = try await connection.initialize()
     guard response.protocolVersion == MCP.protocolVersion else {
       throw MCPClientError.versionMismatch
     }
 
     connectionInfo = ConnectionInfo(
-      connection: mcpConnection,
+      connection: connection,
       serverInfo: response.serverInfo,
       serverCapabilities: response.capabilities)
 
-    try await mcpConnection.acknowledgeInitialization()
+    try await connection.acknowledgeInitialization()
     try await startListeningToNotifications()
     startPinging()
   }

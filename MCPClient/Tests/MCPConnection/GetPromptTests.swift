@@ -3,8 +3,8 @@ import JSONRPC
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class GetPromptTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class GetPromptTests: MCPClientConnectionTest {
 
     @Test("get one prompt")
     func test_getOnePrompt() async throws {

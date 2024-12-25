@@ -6,9 +6,9 @@ import OSLog
 
 private let mcpLogger = Logger(subsystem: Bundle.main.bundleIdentifier.map { "\($0).mcp" } ?? "com.app.mcp", category: "mcp")
 
-// MARK: - MCPConnection
+// MARK: - MCPClientConnection
 
-public actor MCPConnection: MCPConnectionInterface {
+public actor MCPClientConnection: MCPClientConnectionInterface {
 
   // MARK: Lifecycle
 

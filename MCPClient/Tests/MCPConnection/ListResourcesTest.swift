@@ -4,8 +4,8 @@ import SwiftTestingUtils
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class ListResourcesTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class ListResourcesTests: MCPClientConnectionTest {
 
     @Test("list resources")
     func test_listResources() async throws {

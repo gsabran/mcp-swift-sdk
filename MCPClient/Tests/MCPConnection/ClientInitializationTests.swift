@@ -5,8 +5,8 @@ import SwiftTestingUtils
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class ClientInitializationTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class ClientInitializationTests: MCPClientConnectionTest {
 
     @Test("initialize connection")
     func test_initializeConnection() async throws {
@@ -141,13 +141,13 @@ extension MCPConnectionTestSuite {
       // initialize the MCP connection. This will create a JRPC session.
       try await test_initializeConnection()
 
-      // Get pointers to values that we want to see dereferenced when MCPConnection is dereferenced
+      // Get pointers to values that we want to see dereferenced when MCPClientConnection is dereferenced
       weak var weakTransport = transport
       #expect(weakTransport != nil)
 
       // Replace the values referenced by this test class.
       transport = MockTransport()
-      sut = try await MCPConnection(
+      sut = try await MCPClientConnection(
         info: sut.info,
         capabilities: sut.capabilities,
         transport: transport.dataChannel)

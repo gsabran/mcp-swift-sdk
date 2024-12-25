@@ -4,8 +4,8 @@ import MCPShared
 import Testing
 @testable import MCPClient
 
-extension MCPConnectionTestSuite {
-  final class HandleServerRequestTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class HandleServerRequestTests: MCPClientConnectionTest {
 
     @Test("list roots")
     func test_listRoots() async throws {

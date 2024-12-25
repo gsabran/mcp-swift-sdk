@@ -4,10 +4,10 @@ import MCPShared
 import Testing
 @testable import MCPClient
 
-// MARK: - MCPConnectionTestSuite.CallToolTests
+// MARK: - MCPClientConnectionTestSuite.CallToolTests
 
-extension MCPConnectionTestSuite {
-  final class CallToolTests: MCPConnectionTest {
+extension MCPClientConnectionTestSuite {
+  final class CallToolTests: MCPClientConnectionTest {
 
     // MARK: Internal
 

@@ -4,16 +4,16 @@ import SwiftTestingUtils
 import Testing
 @testable import MCPClient
 
-// MARK: - MCPConnectionTestSuite
+// MARK: - MCPClientConnectionTestSuite
 
-/// All the tests about `MCPConnection`
+/// All the tests about `MCPClientConnection`
 @Suite("MCP Connection")
-class MCPConnectionTestSuite { }
+class MCPClientConnectionTestSuite { }
 
-// MARK: - MCPConnectionTest
+// MARK: - MCPClientConnectionTest
 
 /// A parent test class that provides a few util functions to assert that the interactions with the transport are as expected.
-class MCPConnectionTest {
+class MCPClientConnectionTest {
 
   // MARK: Lifecycle
 
@@ -22,7 +22,7 @@ class MCPConnectionTest {
     clientCapabilities = ClientCapabilities(
       roots: .init(listChanged: true),
       sampling: .init())
-    sut = try! MCPConnection(
+    sut = try! MCPClientConnection(
       info: .init(name: "TestClient", version: "1.0.0"),
       capabilities: clientCapabilities,
       transport: transport.dataChannel)
@@ -32,7 +32,7 @@ class MCPConnectionTest {
 
   var transport: MockTransport
   let clientCapabilities: ClientCapabilities
-  var sut: MCPConnection
+  var sut: MCPClientConnection
 
   /// Assert that after receiving the given request, the given response is sent.
   func assert(

@@ -49,7 +49,7 @@ public struct AnyParams: HasMetaValue, Equatable, Codable {
 // MARK: - AnyParamsWithProgressToken
 
 @MemberwiseInit(.public, _optionalsDefaultNil: true)
-public struct AnyParamsWithProgressToken: HasMetaValue, Codable {
+public struct AnyParamsWithProgressToken: HasMetaValue, Codable, Equatable {
   public let _meta: MetaProgress?
   public let value: JSON?
 }
@@ -1056,15 +1056,12 @@ public struct PromptReference: Encodable {
 /// This request is typically used when the server needs to understand the file system
 /// structure or access specific locations that the client has permission to read from.
 @MemberwiseInit(.public, _optionalsDefaultNil: true)
-public struct ListRootsRequest: PaginatedRequest, Decodable {
-  public init(params: SharedPaginationParams) {
-    self.params = params
-  }
+public struct ListRootsRequest: Request, Decodable {
 
   public typealias Result = ListRootsResult
 
   public let method = Requests.listRoots
-  public let params: SharedPaginationParams?
+  public let params: AnyParamsWithProgressToken?
 }
 
 // MARK: - ListRootsResult
@@ -1193,5 +1190,5 @@ public enum ServerNotification: Decodable, Equatable {
 /// Note: the ping request is omitted since it is responded to by the connection layer.
 public enum ServerRequest: Decodable, Equatable {
   case createMessage(CreateMessageRequest.Params)
-  case listRoots(ListRootsRequest.Params?)
+  case listRoots(ListRootsRequest.Params? = nil)
 }

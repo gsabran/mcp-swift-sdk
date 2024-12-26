@@ -45,8 +45,9 @@ let transport = try DataChannel.stdioProcess(
   
 let client = try await MCPClient(
   info: .init(name: "example-client", version: "1.0.0"),
-  capabilities: .init(),
-  transport: transport)
+  transport: transport,
+  capabilities: .init(
+    roots: .init(info: .init(listChanged: true), handler: listRoots)))
 
 // List available resources
 let resources = await client.resources.value

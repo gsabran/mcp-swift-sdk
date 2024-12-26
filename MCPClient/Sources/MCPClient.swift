@@ -15,20 +15,18 @@ public actor MCPClient: MCPClientInterface {
   public init(
     info: Implementation,
     transport: Transport,
-    samplingRequestHandler: SamplingRequestHandler? = nil,
-    listRootRequestHandler: ListRootsRequestHandler? = nil)
+    capabilities: ClientCapabilityHandlers = .init())
   async throws {
-    let capabilities = ClientCapabilities(
-      experimental: nil, // TODO: support experimental requests
-      roots: listRootRequestHandler.map { _ in ListChangedCapability(listChanged: true) },
-      sampling: samplingRequestHandler.map { _ in EmptyObject() })
 
     try await self.init(
-      samplingRequestHandler: samplingRequestHandler,
-      listRootRequestHandler: listRootRequestHandler,
+      samplingRequestHandler: capabilities.sampling?.handler,
+      listRootRequestHandler: capabilities.roots?.handler,
       connection: try MCPClientConnection(
         info: info,
-        capabilities: capabilities,
+        capabilities: ClientCapabilities(
+          experimental: nil, // TODO: support experimental requests
+          roots: capabilities.roots?.info,
+          sampling: capabilities.sampling?.info),
         transport: transport))
   }
 

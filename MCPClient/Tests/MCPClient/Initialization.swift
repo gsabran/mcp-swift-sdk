@@ -38,8 +38,10 @@ extension MCPClientTestSuite {
         try await MCPClient(
           info: Implementation(name: "test-client", version: "1.0.0"),
           transport: transport.dataChannel,
-          samplingRequestHandler: { _ in .init(role: .user, content: .text(.init(text: "hello")), model: "claude") },
-          listRootRequestHandler: { _ in .init(roots: []) })
+          capabilities: ClientCapabilityHandlers(
+            roots: .init(info: .init(listChanged: true), handler: { _ in .init(roots: []) }),
+            sampling: .init(handler: { _ in .init(role: .user, content: .text(.init(text: "hello")), model: "claude") })
+          ))
       }, triggers: [
         .request("""
           {

@@ -1,11 +1,23 @@
 import JSONRPC
 import MCPShared
+import MemberwiseInit
 
 // MARK: - MCPClientInterface
 
 public protocol MCPClientInterface { }
 
 public typealias Transport = DataChannel
+
+/// Describes the supported capabilities of an MCP client, and how to handle each of the supported ones.
+///
+/// Note: This is similar to `ClientCapabilities`, with the addition of the handler function.
+@MemberwiseInit(.public, _optionalsDefaultNil: true)
+public struct ClientCapabilityHandlers {
+  public let roots: CapabilityHandler<ListChangedCapability, ListRootsRequestHandler>?
+  public let sampling: CapabilityHandler<EmptyObject, SamplingRequestHandler>?
+  // TODO: add experimental
+}
+
 
 // MARK: - MCPClientError
 

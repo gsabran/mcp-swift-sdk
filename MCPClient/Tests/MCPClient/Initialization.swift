@@ -40,8 +40,7 @@ extension MCPClientTestSuite {
           transport: transport.dataChannel,
           capabilities: ClientCapabilityHandlers(
             roots: .init(info: .init(listChanged: true), handler: { _ in .init(roots: []) }),
-            sampling: .init(handler: { _ in .init(role: .user, content: .text(.init(text: "hello")), model: "claude") })
-          ))
+            sampling: .init(handler: { _ in .init(role: .user, content: .text(.init(text: "hello")), model: "claude") })))
       }, triggers: [
         .request("""
           {
@@ -88,7 +87,7 @@ extension MCPClientTestSuite {
           """),
       ], with: transport)
 
-      let clientCapabilities = await (client.connection as? MCPClientConnection)?.capabilities
+      let clientCapabilities = await(client.connection as? MCPClientConnection)?.capabilities
       #expect(clientCapabilities?.roots?.listChanged == true)
       #expect(clientCapabilities?.sampling != nil)
     }

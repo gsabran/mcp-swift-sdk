@@ -3,6 +3,8 @@ import MemberwiseInit
 
 public typealias Transport = DataChannel
 
+// MARK: - CapabilityHandler
+
 /// Describes a capability of a client/server (see `ClientCapabilities` and `ServerCapabilities`), as well as how it is handled.
 @MemberwiseInit(.public, _optionalsDefaultNil: true)
 public struct CapabilityHandler<Info, Handler> {

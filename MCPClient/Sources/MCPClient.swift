@@ -17,7 +17,6 @@ public actor MCPClient: MCPClientInterface {
     transport: Transport,
     capabilities: ClientCapabilityHandlers = .init())
   async throws {
-
     try await self.init(
       samplingRequestHandler: capabilities.sampling?.handler,
       listRootRequestHandler: capabilities.roots?.handler,
@@ -180,7 +179,7 @@ public actor MCPClient: MCPClientInterface {
     let connectionInfo = try getConnectionInfo()
     let requests = await connectionInfo.connection.requestsToHandle
     Task { [weak self] in
-      for await (request, completion) in requests {
+      for await(request, completion) in requests {
         guard let self else {
           completion(.failure(.init(
             code: JRPCErrorCodes.internalError.rawValue,

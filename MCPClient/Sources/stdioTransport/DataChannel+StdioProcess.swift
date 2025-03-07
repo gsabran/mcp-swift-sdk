@@ -1,4 +1,3 @@
-
 import Foundation
 import JSONRPC
 import MCPInterface
@@ -46,64 +45,59 @@ extension JSONRPCSetupError: LocalizedError {
 extension Transport {
 
   // MARK: Public
-
-  /// Creates a new `Transport` by launching the given executable with the specified arguments and attaching to its standard IO.
-  public static func stdioProcess(
-    _ executable: String,
-    args: [String] = [],
-    cwd: String? = nil,
-    env: [String: String]? = nil,
-    verbose: Bool = false)
-    throws -> Transport
-  {
-    if verbose {
-      let command = "\(executable) \(args.joined(separator: " "))"
-      logger.log("Running ↪ \(command)")
-    }
-
-    // Create the process
-    func path(for executable: String, env: [String: String]?) -> String? {
-      guard !executable.contains("/") else {
-        return executable
+   
+   public static func stdioProcess(
+      _ executable: String,
+      args: [String] = [],
+      cwd: String? = nil,
+      env: [String: String]? = nil,
+      verbose: Bool = false)
+   throws -> Transport
+   {
+      if verbose {
+         let command = "\(executable) \(args.joined(separator: " "))"
+         logger.log("Running ↪ \(command)")
       }
-      do {
-        let path = try locate(executable: executable, env: env)
-        return path.isEmpty ? nil : path
-      } catch {
-        // Most likely an error because we could not locate the executable
-        return nil
+      
+      // Create the process
+      func path(for executable: String, env: [String: String]?) -> String? {
+         guard !executable.contains("/") else {
+            return executable
+         }
+         do {
+            let path = try locate(executable: executable, env: env)
+            return path.isEmpty ? nil : path
+         } catch {
+            // Most likely an error because we could not locate the executable
+            return nil
+         }
       }
-    }
-
-    let process = Process()
-    // In MacOS, zsh is the default since macOS Catalina 10.15.7. We can safely assume it is available.
-    process.launchPath = "/bin/zsh"
-    if let executable = path(for: executable, env: env) {
+      
+      let process = Process()
+      // In MacOS, zsh is the default since macOS Catalina 10.15.7. We can safely assume it is available.
+      process.launchPath = "/bin/zsh"
+      
+      // Load shell environment and merge with user-provided environment
+      process.environment = try loadZshEnvironment(userEnv: env)
+      
       let command = "\(executable) \(args.joined(separator: " "))"
       process.arguments = ["-c"] + [command]
-      process.environment = env ?? ProcessInfo.processInfo.environment
-    } else {
-      // If we cannot locate the executable, try loading the default environment for zsh, as the current process might not have the correct PATH.
-      process.environment = try loadZshEnvironment()
-      let command = "\(executable) \(args.joined(separator: " "))"
-      process.arguments = ["-c"] + [command]
-    }
-
-    // Working directory
-    if let cwd {
-      process.currentDirectoryPath = cwd
-    }
-
-    // Input/output
-    let stdin = Pipe()
-    let stdout = Pipe()
-    let stderr = Pipe()
-    process.standardInput = stdin
-    process.standardOutput = stdout
-    process.standardError = stderr
-
-    return try stdioProcess(unlaunchedProcess: process, verbose: verbose)
-  }
+      
+      // Working directory
+      if let cwd {
+         process.currentDirectoryPath = cwd
+      }
+      
+      // Input/output
+      let stdin = Pipe()
+      let stdout = Pipe()
+      let stderr = Pipe()
+      process.standardInput = stdin
+      process.standardOutput = stdout
+      process.standardError = stderr
+      
+      return try stdioProcess(unlaunchedProcess: process, verbose: verbose)
+   }
 
   /// Creates a new `Transport` by launching the given process and attaching to its standard IO.
   public static func stdioProcess(
@@ -211,22 +205,46 @@ extension Transport {
     }
     return executablePath
   }
-
-  private static func loadZshEnvironment() throws -> [String: String] {
-    let process = Process()
-    process.launchPath = "/bin/zsh"
-    // Those are loaded for interactive login shell by zsh:
-    // https://www.freecodecamp.org/news/how-do-zsh-configuration-files-work/
-    process.arguments = ["-c", "source ~/.zshenv; source ~/.zprofile; source ~/.zshrc; source ~/.zshrc; printenv"]
-    let env = try getProcessStdout(process: process)
-
-    if let path = env?.split(separator: "\n").filter({ $0.starts(with: "PATH=") }).last {
-      return ["PATH": String(path.dropFirst("PATH=".count))]
-    } else {
-      return ProcessInfo.processInfo.environment
-    }
-  }
-
+   
+   private static func loadZshEnvironment(userEnv: [String: String]? = nil) throws -> [String: String] {
+      // Load shell environment as base
+      let shellProcess = Process()
+      shellProcess.executableURL = URL(fileURLWithPath: "/bin/zsh")
+      shellProcess.arguments = ["-ilc", "printenv"]
+      
+      let outputPipe = Pipe()
+      shellProcess.standardOutput = outputPipe
+      shellProcess.standardError = Pipe()
+      
+      try shellProcess.run()
+      shellProcess.waitUntilExit()
+      
+      let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+      guard let outputString = String(data: data, encoding: .utf8) else {
+         logger.error("Failed to read environment from shell.")
+         return ProcessInfo.processInfo.environment
+      }
+      
+      // Parse shell environment
+      var mergedEnv: [String: String] = [:]
+      outputString.split(separator: "\n").forEach { line in
+         let components = line.split(separator: "=", maxSplits: 1)
+         guard components.count == 2 else { return }
+         let key = String(components[0])
+         let value = String(components[1])
+         mergedEnv[key] = value
+      }
+      
+      // Overlay user-defined environment variables explicitly
+      userEnv?.forEach { key, value in
+         mergedEnv[key] = value
+      }
+      
+      // Log for debugging clarity
+      logger.debug("Final merged environment: \(mergedEnv)")
+      
+      return mergedEnv
+   }
   private static func getProcessStdout(process: Process) throws -> String? {
     let stdout = Pipe()
     let stderr = Pipe()

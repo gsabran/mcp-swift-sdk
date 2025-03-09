@@ -140,7 +140,7 @@ extension Array where Element == any CallableTool {
 
 /// Convert between the JSON representation from `JSONSchema` and ours
 extension [KeywordIdentifier: JSONSchema_JSONValue] {
-  fileprivate var json: JSON {
+  var json: JSON {
     .object(mapValues { $0.value })
   }
 }

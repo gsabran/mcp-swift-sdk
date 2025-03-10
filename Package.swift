@@ -19,12 +19,6 @@ let package = Package(
       targets: [
         "MCPServer",
       ]),
-    .executable(name: "ExampleMCPServer", targets: [
-      "ExampleMCPServer",
-    ]),
-    .executable(name: "ExampleMCPClient", targets: [
-      "ExampleMCPClient",
-    ]),
   ],
   dependencies: [
     .package(url: "https://github.com/gsabran/JSONRPC", from: "0.9.1"),
@@ -55,20 +49,6 @@ let package = Package(
         .product(name: "MemberwiseInit", package: "swift-memberwise-init-macro"),
       ],
       path: "MCPInterface/Sources"),
-
-    // Examples
-    .executableTarget(
-      name: "ExampleMCPServer",
-      dependencies: [
-        .target(name: "MCPServer"),
-      ],
-      path: "ExampleMCPServer/Sources"),
-    .executableTarget(
-      name: "ExampleMCPClient",
-      dependencies: [
-        .target(name: "MCPClient"),
-      ],
-      path: "ExampleMCPClient/Sources"),
 
     // Tests libraries
     .target(

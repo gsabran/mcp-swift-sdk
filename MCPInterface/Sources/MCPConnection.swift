@@ -70,7 +70,6 @@ package class MCPConnection<Request: Decodable & Equatable, Notification: Decoda
       }
 
     case .request(_, let handler, let data):
-      // Respond to ping from the other side
       Task { await handler(handle(receptionOf: data)) }
 
     case .error(let error):

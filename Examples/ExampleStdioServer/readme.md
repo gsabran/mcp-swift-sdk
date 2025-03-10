@@ -3,7 +3,7 @@
 ```
 nvm use 20.18.1
 
-npx @modelcontextprotocol/inspector "$(pwd)/ExampleMCPServer/launch.sh"
+npx @modelcontextprotocol/inspector "$(pwd)/ExampleStdioServer/launch.sh"
 ```
 
 

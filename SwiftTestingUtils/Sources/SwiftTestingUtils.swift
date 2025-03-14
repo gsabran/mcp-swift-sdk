@@ -1,5 +1,5 @@
-
 import Foundation
+import os
 import OSLog
 import Testing
 
@@ -9,7 +9,7 @@ private let logger = Logger(subsystem: "testing", category: "testing")
 
 public enum SwiftTestingUtils {
 
-  public class Expectation {
+  public final class Expectation: Sendable {
 
     init(
       description: String,
@@ -19,15 +19,23 @@ public enum SwiftTestingUtils {
       location = _sourceLocation
     }
 
-    public func fulfill() {
-      if isFulfilled {
-        Issue.record("Expectation from \(location) already fulfilled.")
-      }
-      isFulfilled = true
-      onFulfill()
+    public var isFulfilled: Bool {
+      lock.withLock { $0.isFulfilled }
     }
 
-    private(set) var isFulfilled = false
+    public func fulfill() {
+      let (wasFulfilled, fullfillmentActions) = lock.withLock { state in
+        let wasFulfilled = state.isFulfilled
+        state.isFulfilled = true
+        return (wasFulfilled, state.onFulfill)
+      }
+
+      if wasFulfilled {
+        Issue.record("Expectation from \(location) already fulfilled.")
+        return
+      }
+      for fullfillmentAction in fullfillmentActions { fullfillmentAction() }
+    }
 
     let description: String
     let location: SourceLocation
@@ -37,34 +45,47 @@ public enum SwiftTestingUtils {
         return
       }
 
-      var hasTimedOut = false
-      var hasCompleted = false
+      let hasTimedOut = Atomic(false)
       let description = description
 
       try await withCheckedThrowingContinuation { continuation in
-        onFulfill = {
-          if !hasTimedOut {
-            if hasCompleted {
-              Issue.record("Expectation \(description) fulfilled multiple times.")
-            } else {
-              hasCompleted = true
-              continuation.resume(returning: ())
-            }
+        let onFulfill: @Sendable () -> Void = {
+          if !hasTimedOut.value {
+            continuation.resume(returning: ())
           } else {
             logger.error("Expectation \(description) fulfilled after timeout.")
           }
         }
+        let wasFulfilled = lock.withLock { state in
+          if state.isFulfilled {
+            return true
+          }
+          state.onFulfill.append(onFulfill)
+          return false
+        }
+        if wasFulfilled {
+          continuation.resume(returning: ())
+        }
         Task {
-          try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-          if !hasCompleted {
-            hasTimedOut = true
-            continuation.resume(throwing: SwiftTesting.expectationTimeout(description: description))
+          do {
+            try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+            if !isFulfilled {
+              hasTimedOut.mutate { $0 = true }
+              continuation.resume(throwing: SwiftTesting.expectationTimeout(description: description))
+            }
+          } catch {
+            continuation.resume(throwing: error)
           }
         }
       }
     }
 
-    private var onFulfill: () -> Void = { }
+    private struct InternalState {
+      var isFulfilled = false
+      var onFulfill: [@Sendable () -> Void] = []
+    }
+
+    private let lock = OSAllocatedUnfairLock<InternalState>(initialState: InternalState())
   }
 
   enum SwiftTesting: Error {

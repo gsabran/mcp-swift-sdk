@@ -3,11 +3,14 @@
 
 import Foundation
 
+// MARK: - Process Extensions (macOS only)
+
+#if os(macOS)
 extension Process {
   /// Launches process.
   ///
   /// - throws: CommandError.inAccessibleExecutable if command could not be executed.
-  func launchThrowably() throws {
+  public func launchThrowably() throws {
     #if !os(macOS)
     guard Files.isExecutableFile(atPath: executableURL!.path) else {
       throw CommandError.inAccessibleExecutable(path: executableURL!.lastPathComponent)
@@ -32,7 +35,7 @@ extension Process {
   ///
   /// - throws: `CommandError.returnedErrorCode(command: String, errorcode: Int)`
   ///   if the exit code is anything but 0.
-  func finish() throws {
+  public func finish() throws {
     /// The full path to the executable + all arguments, each one quoted if it contains a space.
     func commandAsString() -> String {
       let path: String =
@@ -51,6 +54,7 @@ extension Process {
     }
   }
 }
+#endif
 
 // MARK: - CommandError
 

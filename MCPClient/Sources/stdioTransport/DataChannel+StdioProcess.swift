@@ -44,7 +44,9 @@ extension JSONRPCSetupError: LocalizedError {
 
 extension Transport {
 
+#if os(macOS)
   /// Creates a new `Transport` by launching the given executable with the specified arguments and attaching to its standard IO.
+  /// This functionality is only available on macOS.
   public static func stdioProcess(
     _ executable: String,
     args: [String] = [],
@@ -105,6 +107,7 @@ extension Transport {
   }
 
   /// Creates a new `Transport` by launching the given process and attaching to its standard IO.
+  /// This functionality is only available on macOS.
   public static func stdioProcess(
     unlaunchedProcess process: Process,
     verbose: Bool = false)
@@ -193,6 +196,7 @@ extension Transport {
   }
 
   /// Finds the full path to the executable using the `which` command.
+  /// This functionality is only available on macOS.
   private static func locate(executable: String, env: [String: String]? = nil) throws -> String {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
@@ -209,6 +213,8 @@ extension Transport {
     return executablePath
   }
 
+  /// Loads the zsh environment variables.
+  /// This functionality is only available on macOS.
   private static func loadZshEnvironment(userEnv: [String: String]? = nil) throws -> [String: String] {
     // Load shell environment as base
     let shellProcess = Process()
@@ -246,6 +252,8 @@ extension Transport {
       }
   }
 
+  /// Gets the standard output from a process.
+  /// This functionality is only available on macOS.
   private static func getProcessStdout(process: Process) throws -> String? {
     let stdout = Pipe()
     let stderr = Pipe()
@@ -278,7 +286,7 @@ extension Transport {
 
     return String(data: stdoutData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
   }
-
+#endif
 }
 
 // MARK: - Lifetime

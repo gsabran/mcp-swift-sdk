@@ -44,7 +44,7 @@ extension JSONRPCSetupError: LocalizedError {
 
 extension Transport {
 
-#if os(macOS)
+  #if os(macOS)
   /// Creates a new `Transport` by launching the given executable with the specified arguments and attaching to its standard IO.
   /// This functionality is only available on macOS.
   public static func stdioProcess(
@@ -286,7 +286,7 @@ extension Transport {
 
     return String(data: stdoutData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
   }
-#endif
+  #endif
 }
 
 // MARK: - Lifetime

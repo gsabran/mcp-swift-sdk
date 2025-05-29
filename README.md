@@ -6,6 +6,11 @@
 
 Swift implementation of the [Model Context Protocol](https://modelcontextprotocol.io) (MCP), providing both client and server capabilities for integrating with LLM surfaces.
 
+## Archive notice
+Given that another package was chosen by Anthropic as [their official Swift MCP SDK]([url](https://github.com/modelcontextprotocol/swift-sdk)), this package will not be maintained anymore. Particularly it will not support future changes to the MCP specs.
+While I would have liked to keep maintaining it, it doesn't seem to make sense to dedicate significant time to doing so given the official recommendation.
+Thanks to all those who contributed to this project, and provided feedback ❤️.
+
 ## Overview
 
 The Model Context Protocol allows applications to provide context for LLMs in a standardized way, separating the concerns of providing context from the actual LLM interaction. This Swift SDK implements the full MCP specification for the client, making it easy to:

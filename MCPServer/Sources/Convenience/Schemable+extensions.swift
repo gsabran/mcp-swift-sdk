@@ -159,3 +159,23 @@ extension JSONSchema_JSONValue {
     }
   }
 }
+
+/*
+'Input.schema.schemaValue.json' would not be compiled because Input.schema.schemaValue returns a SchemaValue object, but there was no direct way to convert this to the custom JSON type. The existing extensions only handled:
+    [KeywordIdentifier: JSONSchema_JSONValue] → JSON
+    JSONSchema_JSONValue → JSON.Value
+ But there was no extension for:
+    SchemaValue → JSON
+*/
+extension SchemaValue {
+  var json: JSON {
+    switch self {
+    case .boolean(let value):
+      // For boolean schema values, create a simple JSON object
+      return .object(["type": .string("boolean"), "default": .bool(value)])
+    case .object(let dict):
+      // Use the existing extension on [KeywordIdentifier: JSONSchema_JSONValue]
+      return dict.json
+    }
+  }
+}
